@@ -22,7 +22,7 @@ $(function() {
 });
 
 function install_div() {
-  myDiv.html("<p>Здесь будет форма для копирования в любой план/дисциплину.</p>");
+  myDiv.empty();
   myDiv.hide();
   add_institutes();
 }
