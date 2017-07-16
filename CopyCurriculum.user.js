@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name        CopyToOther
+// @name        CopyCurriculum
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1.1
+// @version     1.2
 // @grant       none
 // ==/UserScript==
 var myDiv;
+var version = "1.2";
 $(function() {
   var place = $(".modal-header:last");
   place.append($("<h4>Копирование РП в любой план/дисциплину</h4>"));
@@ -32,7 +33,23 @@ $(function() {
 function install_div() {
   myDiv.empty();
   myDiv.hide();
+  add_help();
   add_institutes();
+}
+
+function add_help() {
+  myDiv.append(
+    '<p>\
+    <b>Внимание!</b><br/>\
+    Убедительная просьба внимательно ознакомиться с \
+    <a href="https://docs.google.com/document/d/1O5R4wgWqRRWgcinUQXKq81VJ0mZYmunsa0wcwxte480/edit?usp=sharing">\
+    инструкцией по копированию РП в конструкторе</a>.<br/>\
+    Также убедитесь, что вы пользуетесь самой свежей версией скрипта. Текущая версия <b>' +
+    version + '</b>, скрипт можно установить \
+    <a href="https://gist.github.com/dvhex/8ba5959ae81679a6f8cb666aa31b321c">здесь</a> (по кнопке "Raw").<br/>\
+    Ниже выберите учебный план, куда вы хотите скопировать текущую рабочую программу.\
+    </p>'
+  );
 }
 
 function add_institutes() {
@@ -78,7 +95,7 @@ function add_disciplines() {
   create_select_element(
     "/api/disciplines?plan=" + $(this).val(),
     "discipline_copy_id",
-    "Дисциплина (если требуется)",
+    "Дисциплина (если отличается)",
     undefined,
     function(obj) {
       if (obj.department_id != $("#discipline_department_id").val())
@@ -110,6 +127,25 @@ function changeIds() {
   if (d_id != "") {
     setValueForElementsByName("discipline_id", d_id);
   }
+  else
+    d_id = $("#discipline_id").val();
+  add_info(plan_id, d_id);
+}
+
+function add_info(plan_id, d_id) {
+  var url = "https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=" +
+      plan_id + "&discipline_id=" + d_id;
+  myDiv.append(
+    '<p>\
+Текущая рабочая программа готова к копированию. Теперь необходимо вручную нажать клавиши "Сохранить компетенцию" \
+для всех компетенций, которые нужно скопировать, а также клавишу "Сохранить" внизу страницы для \
+копирование всей рабочей программы.<br/>\
+<b>Теперь, если вам нужно внести изменения в текущую рабочую программу, то необходимо перезагрузить страницу!</b>\
+    </p><p>После сохранения РП страница будет перезагружена, и для повторного копирования нужно \
+    заново выбрать учебный план и дисциплину.</p>\
+    <p>Контруктор РП, куда вы собираетесь сохранить изменения, находится по ссылке: <a href="' + url +
+    '">' + url + '</a>.</p>'
+  );
 }
 
 function setValueForElementsByName(name, value) {
