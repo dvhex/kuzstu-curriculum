@@ -3,7 +3,7 @@
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1
+// @version     1.1
 // @grant       none
 // ==/UserScript==
 var myDiv;
@@ -16,8 +16,16 @@ $(function() {
       .text("Показать/Скрыть")
       .click(function() {$("#copy-to-other").toggle()});
   place.append(btn);
-  myDiv = $("<div></div>").attr("id", "copy-to-other");
-  place.append(myDiv);
+  myDiv = $("<div/>").attr("id", "copy-to-other");
+  var copyForm = $("<form/>").attr({
+    "class":"form-horizontal",
+    "style":"margin-bottom:0px;",
+    "role":"form","autocomplete":"off"
+  });
+  var fieldSet = $("<fieldset/>");
+  fieldSet.append(myDiv);
+  copyForm.append(fieldSet);
+  place.append(copyForm);
   install_div();
 });
 
@@ -31,7 +39,7 @@ function add_institutes() {
   create_select_element(
     "/api/institutes",
     "institute_id",
-    "Выберите институт",
+    "Институт",
     add_directions,
     function(obj) {
       return {"id":obj.id, "name":obj.name};
@@ -43,7 +51,7 @@ function add_directions() {
   create_select_element(
     "/api/directions?institute="+$(this).val(),
     "direction_id",
-    "Выберите направление",
+    "Направление",
     add_plans,
     function(obj) {
       return {
@@ -58,7 +66,7 @@ function add_plans() {
   create_select_element(
     "/api/plans?direction="+$(this).val(),
     "plan_copy_id",
-    "Выберите план",
+    "Год УП",
     add_disciplines,
     function(obj) {
       return {"id":obj.id,"name":obj.year};
@@ -70,7 +78,7 @@ function add_disciplines() {
   create_select_element(
     "/api/disciplines?plan=" + $(this).val(),
     "discipline_copy_id",
-    "Выберите дисциплину, если требуется",
+    "Дисциплина (если требуется)",
     undefined,
     function(obj) {
       if (obj.department_id != $("#discipline_department_id").val())
@@ -111,26 +119,36 @@ function setValueForElementsByName(name, value) {
 function create_select_element(url, name, description, onchange, callback) {
   var sel = $("#" + name);
   if (sel.length==0) {
-    sel = $("<select/>").attr({
-      "id":name,
-      "name":name,
-      "class":"span7",
-      "dataContainer":"body"
-    });
-    sel.hide();
-    myDiv.append(sel);
-    myDiv.append($("<br/>")); // Костыль
-    sel.on("change", onchange);
+    sel = mk_new_select_in_control_group(name, description, onchange);
   }
   sel.empty();
-  sel.append('<option value="">' + description + '</option>');
+  sel.append('<option value="">Ничего не выбрано</option>');
   $.getJSON(url, function(data) {
     $(data).each(function(index, obj){
       var res = callback(obj);
       if (res != undefined)
         sel.append('<option value="' + res.id + '">' + res.name + '</option>');
     });
-    sel.show();
+    sel.parent().parent().show();
   });
+  return sel;
+}
+
+function mk_new_select_in_control_group(name, description, onchange) {
+  var controlGroup = $("<div/>").attr("class", "control-group");
+  var label = $("<label/>").attr({"class":"control-label","for":name}).text(description);
+  controlGroup.append(label);
+  var sel = $("<select/>").attr({
+    "id":name,
+    "name":name,
+    "class":"span7",
+    "dataContainer":"body"
+  }).on("change", onchange);
+  var controls = $("<div/>").attr("class","controls");
+  controls.append(sel);
+  controlGroup.append(controls);
+  controlGroup.hide();
+  myDiv.append(controlGroup);
+  myDiv.append($("<br/>")); // Костыль
   return sel;
 }
