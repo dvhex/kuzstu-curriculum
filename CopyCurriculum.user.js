@@ -21,7 +21,7 @@ $(function() {
     "class":"form-horizontal",
     "style":"margin-bottom:0px;",
     "role":"form","autocomplete":"off"
-  });
+  }).submit(function() {return false;});
   var fieldSet = $("<fieldset/>");
   fieldSet.append(myDiv);
   copyForm.append(fieldSet);
@@ -92,7 +92,7 @@ function add_disciplines() {
 function add_save_button() {
   if ($("#copy-btn").length > 0) return;
   var btn = $("<button/>")
-    .text("Скопировать")
+    .text("Приступить к копированию")
     .attr({"id":"copy-btn","class":"btn btn-primary"})
     .click(changeIds);
   myDiv.append(btn);
