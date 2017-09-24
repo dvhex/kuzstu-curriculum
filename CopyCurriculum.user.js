@@ -3,11 +3,11 @@
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1.2
+// @version     1.2.1
 // @grant       none
 // ==/UserScript==
 var myDiv;
-var version = "1.2";
+var version = "1.2.1";
 $(function() {
   var place = $(".modal-header:last");
   place.append($("<h4>Копирование РП в любой план/дисциплину</h4>"));
@@ -46,6 +46,7 @@ function add_help() {
     инструкцией по копированию РП в конструкторе</a>.<br/>\
     Также убедитесь, что вы пользуетесь самой свежей версией скрипта. Текущая версия <b>' +
     version + '</b>, скрипт можно установить \
+    <a href="https://greasyfork.org/ru/scripts/33455-copycurriculum">здесь</a> или \
     <a href="https://gist.github.com/dvhex/8ba5959ae81679a6f8cb666aa31b321c">здесь</a> (по кнопке "Raw").<br/>\
     Ниже выберите учебный план, куда вы хотите скопировать текущую рабочую программу.\
     </p>'
