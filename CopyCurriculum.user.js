@@ -3,11 +3,12 @@
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1.2.1
+// @version     1.3
 // @grant       none
+// @license     CC0 (Creative Commons Zero)
 // ==/UserScript==
 var myDiv;
-var version = "1.2.1";
+var version = "1.3";
 $(function() {
   var place = $(".modal-header:last");
   place.append($("<h4>Копирование РП в любой план/дисциплину</h4>"));
@@ -46,7 +47,7 @@ function add_help() {
     инструкцией по копированию РП в конструкторе</a>.<br/>\
     Также убедитесь, что вы пользуетесь самой свежей версией скрипта. Текущая версия <b>' +
     version + '</b>, скрипт можно установить \
-    <a href="https://greasyfork.org/ru/scripts/33455-copycurriculum">здесь</a> или \
+    <a href="https://greasyfork.org/ru/scripts/33455-copycurriculum">здесь</a> (рекомендуемый вариант с возможностью автоматического обновления) или \
     <a href="https://gist.github.com/dvhex/8ba5959ae81679a6f8cb666aa31b321c">здесь</a> (по кнопке "Raw").<br/>\
     Ниже выберите учебный план, куда вы хотите скопировать текущую рабочую программу.\
     </p>'
@@ -118,14 +119,14 @@ function add_save_button() {
 
 function changeIds() {
   var plan_id = $("#plan_copy_id").val();
-  if (plan_id == "") {
+  if (plan_id === "") {
     alert("Не выбран учебный план для копирования!");
     return;
   }
   setValueForElementsByName("plan_id", plan_id);
   setValueForElementsByName("add_plans", plan_id);
   var d_id = $("#discipline_copy_id").val();
-  if (d_id != "") {
+  if (d_id !== "") {
     setValueForElementsByName("discipline_id", d_id);
   }
   else
@@ -138,7 +139,7 @@ function add_info(plan_id, d_id) {
       plan_id + "&discipline_id=" + d_id;
   myDiv.append(
     '<p>\
-Текущая рабочая программа готова к копированию. Теперь необходимо вручную нажать клавиши "Сохранить компетенцию" \
+Текущая рабочая программа готова к копированию. Далее необходимо вручную нажать клавиши "Сохранить компетенцию" \
 для всех компетенций, которые нужно скопировать, а также клавишу "Сохранить" внизу страницы для \
 копирование всей рабочей программы.<br/>\
 <b>Теперь, если вам нужно внести изменения в текущую рабочую программу, то необходимо перезагрузить страницу!</b>\
@@ -155,16 +156,27 @@ function setValueForElementsByName(name, value) {
 
 function create_select_element(url, name, description, onchange, callback) {
   var sel = $("#" + name);
-  if (sel.length==0) {
+  if (sel.length===0) {
     sel = mk_new_select_in_control_group(name, description, onchange);
   }
   sel.empty();
   sel.append('<option value="">Ничего не выбрано</option>');
   $.getJSON(url, function(data) {
-    $(data).each(function(index, obj){
+    var values = [];
+    $(data).each(function(index, obj) {
       var res = callback(obj);
-      if (res != undefined)
-        sel.append('<option value="' + res.id + '">' + res.name + '</option>');
+      if (res !== undefined)
+        values.push(res);
+    });
+    values.sort(function(a, b) {
+      if (a.name > b.name)
+        return 1;
+      if (a.name < b.name)
+        return -1;
+      return 0;
+    });
+    $(values).each(function(index, obj) {
+      sel.append('<option value="' + obj.id + '">' + obj.name + '</option>');
     });
     sel.parent().parent().show();
   });
