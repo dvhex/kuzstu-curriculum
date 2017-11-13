@@ -3,21 +3,22 @@
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1.3
+// @version     1.4
 // @grant       none
 // @license     CC0 (Creative Commons Zero)
 // ==/UserScript==
 var myDiv;
-var version = "1.3";
+var version = "1.4";
 $(function() {
   var place = $(".modal-header:last");
-  place.append($("<h4>Копирование РП в любой план/дисциплину</h4>"));
+  var newPlace = $("<div></div>").attr("class", "well-small");
+  newPlace.append($("<h4>Копирование РП в любой план/дисциплину</h4>"));
   var btn =
       $("<button></button>")
       .attr("class", "btn btn-primary")
       .text("Показать/Скрыть")
       .click(function() {$("#copy-to-other").toggle()});
-  place.append(btn);
+  newPlace.append(btn);
   myDiv = $("<div/>").attr("id", "copy-to-other");
   var copyForm = $("<form/>").attr({
     "class":"form-horizontal",
@@ -27,7 +28,8 @@ $(function() {
   var fieldSet = $("<fieldset/>");
   fieldSet.append(myDiv);
   copyForm.append(fieldSet);
-  place.append(copyForm);
+  newPlace.append(copyForm);
+  place.after(newPlace);
   install_div();
 });
 
