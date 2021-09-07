@@ -3,12 +3,13 @@
 // @namespace   portal.kuzstu.ru
 // @description Копирование текущей РП в другие планы и дисциплины
 // @include     https://portal.kuzstu.ru/learning/curriculum/plan/curriculum_editing?plan_id=*&discipline_id=*
-// @version     1.4
+// @require	    https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
+// @version     1.4.2
 // @grant       none
 // @license     CC0 (Creative Commons Zero)
 // ==/UserScript==
 var myDiv;
-var version = "1.4";
+var version = "1.4.2";
 $(function() {
   var place = $(".modal-header:last");
   var newPlace = $("<div></div>").attr("class", "well-small");
@@ -31,7 +32,12 @@ $(function() {
   newPlace.append(copyForm);
   place.after(newPlace);
   install_div();
+  unlock_button();
 });
+
+function unlock_button() {
+  $(".savechanges:first").removeAttr("disabled");
+}
 
 function install_div() {
   myDiv.empty();
